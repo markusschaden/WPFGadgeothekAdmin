@@ -1,0 +1,48 @@
+﻿<Window x:Class="WPFGadgeothekAdmin.Gadget"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFGadgeothekAdmin"
+        mc:Ignorable="d"
+        Title="Gadget" Height="300" Width="300">
+    <Grid>
+        <StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  Width="100"></ColumnDefinition>
+                    <ColumnDefinition  Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="ID" Grid.Row="0" Grid.Column="0"></TextBlock>
+                <TextBlock Text="123456789" Grid.Row="0" Grid.Column="1"></TextBlock>
+                <TextBlock Text="Name" Grid.Row="1" Grid.Column="0"></TextBlock>
+                <TextBox Name="GadgetName" Grid.Row="1" Grid.Column="1"></TextBox>
+                <TextBlock Text="Manufactor" Grid.Row="2" Grid.Column="0"></TextBlock>
+                <TextBox Name="GadgetManufactor" Grid.Row="2" Grid.Column="1"></TextBox>
+                <TextBlock Text="Price" Grid.Row="3" Grid.Column="0"></TextBlock>
+                <TextBox Name="GadgetPrice" Grid.Row="3" Grid.Column="1"></TextBox>
+                <TextBlock Text="Condition" Grid.Row="4" Grid.Column="0"></TextBlock>
+                <ComboBox Name="GadgetCondition" Grid.Row="4" Grid.Column="1">
+                    <ComboBoxItem Content="NEW"></ComboBoxItem>
+                    <ComboBoxItem Content="GOOD"></ComboBoxItem>
+                    <ComboBoxItem Content="DAMAGED"></ComboBoxItem>
+                    <ComboBoxItem Content="WASTE"></ComboBoxItem>
+                    <ComboBoxItem Content="LOST"></ComboBoxItem>
+                </ComboBox>
+            
+            </Grid>
+        
+            <UniformGrid Columns="2">
+                <Button Name="GadgetSave" Content="Save"></Button>
+                <Button Name="GadgetCancel" Content="Cancel"></Button>
+            </UniformGrid>
+        </StackPanel>
+    </Grid>
+</Window>

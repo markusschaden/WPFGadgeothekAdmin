@@ -1,0 +1,153 @@
+﻿<Window x:Class="WPFGadgeothekAdmin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFGadgeothekAdmin"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="750">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="WHITE" Offset="0.0"/>
+                <GradientStop Color="Gainsboro" Offset="1"/>
+            </LinearGradientBrush>
+
+        </Grid.Background>
+        <StackPanel>
+            <Border BorderBrush="{x:Null}" Height="50">
+                <!--<Border.Background>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                        <GradientStop Color="#FFCBCBCB" Offset="0.0"/>
+                        <GradientStop Color="#FF5F5F5F" Offset="0.5"/>
+                        <GradientStop Color="#FF282829" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+-->
+                <Label Content="Gadgeothek" 
+       FontSize="24" FontWeight="Bold">
+                    <Label.Foreground>
+                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1.0,0.5">
+                            <GradientStop Color="DarkSlateBlue" Offset="0.0"/>
+                            <GradientStop Color="SkyBlue" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Label.Foreground>
+                </Label>
+
+            </Border>
+
+
+            <TabControl>
+                <TabItem Header="Gadgets">
+                    <StackPanel>
+                        <DockPanel  Margin="0,10,0,5">
+                            <TextBox Width="200" DockPanel.Dock="Left"></TextBox>
+
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Gadget hinzufügen" Margin="0,0,10,0" Click="Button_Click"></Button>
+                                <Button Content="Gadget editieren"></Button>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <DataGrid>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Hersteller"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Preis"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Zustand"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Verfügbar ab"></DataGridTextColumn>
+                                <DataGridTextColumn Header="Ausgeliehen an"></DataGridTextColumn>
+                            </DataGrid.Columns>
+
+
+                        </DataGrid>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="Ausleihe">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            
+                             <TextBox Width="200" HorizontalAlignment="Left"></TextBox>
+                           
+                            <DataGrid>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                    <DataGridCheckBoxColumn Header="Hat überfällige"></DataGridCheckBoxColumn>
+                                </DataGrid.Columns>
+
+
+                            </DataGrid>
+                        </StackPanel>
+                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                        <Grid Column="2">
+                            <StackPanel>
+                                <TextBlock>Ausleihen 1/3</TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox IsEditable="True"></ComboBox>
+                                    <Button Content="Ausleihen"></Button>
+                                </StackPanel>
+                                
+                                <DataGrid>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Ausgeliehen am"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Zurück bis"></DataGridTextColumn>
+                                        <DataGridCheckBoxColumn Header="Fällig"></DataGridCheckBoxColumn>
+                                        <DataGridCheckBoxColumn Header="Reserviert"></DataGridCheckBoxColumn>
+                                        <DataGridTemplateColumn Header="Rücknahme">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Click="ShowHideDetails">Rücknahme</Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <TextBlock>Reservation 1/3</TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox IsEditable="True"></ComboBox>
+                                    <Button Content="Reservieren"></Button>
+                                </StackPanel>
+
+                                <DataGrid>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Warteschlange"></DataGridTextColumn>
+                                        <DataGridTemplateColumn Header="Ausleihen">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Click="ShowHideDetails">Ja / Nein</Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTemplateColumn Header="Löschen">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Click="ShowHideDetails">Löschen</Button>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                </TabItem>
+
+            </TabControl>
+
+
+        </StackPanel>
+    </Grid>
+</Window>
