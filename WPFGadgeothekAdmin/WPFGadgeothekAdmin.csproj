@@ -55,7 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Gadget.xaml">
+    <Compile Include="viewmodel\GadgetViewModel.cs" />
+    <Page Include="GadgetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -67,8 +68,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Gadget.xaml.cs">
-      <DependentUpon>Gadget.xaml</DependentUpon>
+    <Compile Include="ComboBoxItemTemplateSelector.cs" />
+    <Compile Include="GadgetView.xaml.cs">
+      <DependentUpon>GadgetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -101,6 +103,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\gitRepos\Miniprojekt-Vorlage-WPF\ch.hsr.wpf.gadgeothek\ch.hsr.wpf.gadgeothek.csproj">
+      <Project>{ac1eeaa5-ea41-46fc-8afe-f0cf4b936abb}</Project>
+      <Name>ch.hsr.wpf.gadgeothek</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

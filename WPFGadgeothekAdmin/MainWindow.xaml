@@ -10,13 +10,20 @@
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="WHITE" Offset="0.0"/>
-                <GradientStop Color="Gainsboro" Offset="1"/>
+                <GradientStop Color="SkyBlue" Offset="1"/>
             </LinearGradientBrush>
 
         </Grid.Background>
-        <StackPanel>
-            <Border BorderBrush="{x:Null}" Height="50">
-                <!--<Border.Background>
+        <DockPanel>
+            <StatusBar DockPanel.Dock="Bottom" Height="20px">
+                <StatusBarItem>Connected to</StatusBarItem>
+                <StatusBarItem Content="{Binding ServiceUrl}"></StatusBarItem>
+
+            </StatusBar>
+
+            <StackPanel DockPanel.Dock="Top" >
+                <Border BorderBrush="{x:Null}" Height="50">
+                    <!--<Border.Background>
                     <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
                         <GradientStop Color="#FFCBCBCB" Offset="0.0"/>
                         <GradientStop Color="#FF5F5F5F" Offset="0.5"/>
@@ -24,130 +31,192 @@
                     </LinearGradientBrush>
                 </Border.Background>
 -->
-                <Label Content="Gadgeothek" 
+                    <Label Content="Gadgeothek" 
        FontSize="24" FontWeight="Bold">
-                    <Label.Foreground>
-                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1.0,0.5">
-                            <GradientStop Color="DarkSlateBlue" Offset="0.0"/>
-                            <GradientStop Color="SkyBlue" Offset="1.0"/>
-                        </LinearGradientBrush>
-                    </Label.Foreground>
-                </Label>
-
-            </Border>
+                        <Label.Foreground>
+                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1.0,0.5">
+                                <GradientStop Color="DarkSlateBlue" Offset="0.0"/>
+                                <GradientStop Color="SkyBlue" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Label.Foreground>
+                    </Label>
 
 
-            <TabControl>
-                <TabItem Header="Gadgets">
-                    <StackPanel>
-                        <DockPanel  Margin="0,10,0,5">
-                            <TextBox Width="200" DockPanel.Dock="Left"></TextBox>
-
-                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="Gadget hinzufügen" Margin="0,0,10,0" Click="Button_Click"></Button>
-                                <Button Content="Gadget editieren"></Button>
-                            </StackPanel>
-                        </DockPanel>
-
-                        <DataGrid>
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Name"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Hersteller"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Preis"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Zustand"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Verfügbar ab"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Ausgeliehen an"></DataGridTextColumn>
-                            </DataGrid.Columns>
 
 
-                        </DataGrid>
-                    </StackPanel>
-                </TabItem>
-                <TabItem Header="Ausleihe">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                </Border>
+
+
+                <TabControl>
+                    <TabControl.Background>#99ffffff</TabControl.Background>
+                    <TabItem Header="GadgetViews" RenderTransformOrigin="0.5,0.509">
                         <StackPanel>
-                            
-                             <TextBox Width="200" HorizontalAlignment="Left"></TextBox>
-                           
-                            <DataGrid>
+                            <DockPanel  Margin="0,10,0,5">
+
+                                <Grid DockPanel.Dock="Left" >
+                                    <TextBox  Width="200" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox" Padding="4px"/>
+                                    <TextBlock IsHitTestVisible="False" Text="Search" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="GadgetView hinzufügen" Margin="0,0,10,0" Click="Button_Click" Background="#FFF3F3F3" Padding="4px">
+
+                                    </Button>
+                                    <Button Content="GadgetView editieren" Background="#FFF3F3F3" Padding="4px"></Button>
+                                </StackPanel>
+                            </DockPanel>
+
+                            <DataGrid ItemsSource="{Binding GadgetViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFFCFCFC">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Name"></DataGridTextColumn>
-                                    <DataGridCheckBoxColumn Header="Hat überfällige"></DataGridCheckBoxColumn>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Gadget.InventoryNumber}" IsReadOnly="True"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Gadget.Name}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Hersteller" Binding="{Binding Gadget.Manufacturer}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Preis" Binding="{Binding Gadget.Price}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Zustand" Binding="{Binding Gadget.Condition}"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Verfügbar ab" Binding="{Binding ReturnDate, StringFormat=HH:mm dd.MM.yyyy}" IsReadOnly="True"></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Ausgeliehen an" Binding="{Binding PickupDate, StringFormat=HH:mm dd.MM.yyyy}" IsReadOnly="True"></DataGridTextColumn>
                                 </DataGrid.Columns>
-
-
                             </DataGrid>
+
                         </StackPanel>
-                        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-                        <Grid Column="2">
+                    </TabItem>
+                    <TabItem Header="Ausleihe" HorizontalAlignment="Right" Margin="0,-2,-1.8,2.4" Width="61">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock>Ausleihen 1/3</TextBlock>
-                                <StackPanel Orientation="Horizontal">
-                                    <ComboBox IsEditable="True"></ComboBox>
-                                    <Button Content="Ausleihen"></Button>
-                                </StackPanel>
-                                
-                                <DataGrid>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Ausgeliehen am"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Zurück bis"></DataGridTextColumn>
-                                        <DataGridCheckBoxColumn Header="Fällig"></DataGridCheckBoxColumn>
-                                        <DataGridCheckBoxColumn Header="Reserviert"></DataGridCheckBoxColumn>
-                                        <DataGridTemplateColumn Header="Rücknahme">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button Click="ShowHideDetails">Rücknahme</Button>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
+
+                                <Grid>
+                                    <TextBox  Width="200px" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox2" Padding="4px"/>
+                                    <TextBlock IsHitTestVisible="False" Text="Search" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox2}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                                <DataGrid ItemsSource="{Binding Customers}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFF7F7F7">
+                                    <DataGrid.Columns >
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Studentnumber}"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"></DataGridTextColumn>
+                                        <DataGridCheckBoxColumn Header="Hat überfällige"></DataGridCheckBoxColumn>
                                     </DataGrid.Columns>
+
+
                                 </DataGrid>
-
-                                <TextBlock>Reservation 1/3</TextBlock>
-                                <StackPanel Orientation="Horizontal">
-                                    <ComboBox IsEditable="True"></ComboBox>
-                                    <Button Content="Reservieren"></Button>
-                                </StackPanel>
-
-                                <DataGrid>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Warteschlange"></DataGridTextColumn>
-                                        <DataGridTemplateColumn Header="Ausleihen">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button Click="ShowHideDetails">Ja / Nein</Button>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                        <DataGridTemplateColumn Header="Löschen">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button Click="ShowHideDetails">Löschen</Button>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-
                             </StackPanel>
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                            <Grid Column="2">
+                                <StackPanel>
+                                    <TextBlock>Ausleihen 1/3</TextBlock>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ComboBox IsEditable="True" ItemsSource="{Binding AvailableGadgets}">
+                                            <ComboBox.ItemTemplateSelector>
+                                                <local:ComboBoxItemTemplateSelector>
+                                                    <local:ComboBoxItemTemplateSelector.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Image Source="{Binding Image}" Height="100"/>
+                                                                <StackPanel Margin="10,0">
+                                                                    <TextBlock Text="{Binding FullName}" FontWeight="Bold" />
+                                                                    <TextBlock Text="{Binding Dates}"/>
+                                                                    <TextBlock Text="{Binding KnownFor}" FontStyle="Italic"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </local:ComboBoxItemTemplateSelector.ItemTemplate>
+                                                    <local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Image Source="{Binding Image}" Height="40" Margin="5,0"/>
+                                                                <TextBlock Text="{Binding FullName}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </local:ComboBoxItemTemplateSelector.SelectedItemTemplate>
+                                                </local:ComboBoxItemTemplateSelector>
+                                            </ComboBox.ItemTemplateSelector>
+
+                                        </ComboBox>
+                                        <Button Content="Ausleihen"></Button>
+                                    </StackPanel>
+
+                                    <DataGrid>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Ausgeliehen am"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Zurück bis"></DataGridTextColumn>
+                                            <DataGridCheckBoxColumn Header="Fällig"></DataGridCheckBoxColumn>
+                                            <DataGridCheckBoxColumn Header="Reserviert"></DataGridCheckBoxColumn>
+                                            <DataGridTemplateColumn Header="Rücknahme">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Click="ShowHideDetails">Rücknahme</Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <TextBlock>Reservation 1/3</TextBlock>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ComboBox IsEditable="True"></ComboBox>
+                                        <Button Content="Reservieren"></Button>
+                                    </StackPanel>
+
+                                    <DataGrid>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Warteschlange"></DataGridTextColumn>
+                                            <DataGridTemplateColumn Header="Ausleihen">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Click="ShowHideDetails">Ja / Nein</Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Löschen">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Click="ShowHideDetails">Löschen</Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+
+                                </StackPanel>
+                            </Grid>
                         </Grid>
-                    </Grid>
 
-                </TabItem>
+                    </TabItem>
 
-            </TabControl>
+                </TabControl>
 
 
-        </StackPanel>
+            </StackPanel>
+
+
+        </DockPanel>
     </Grid>
 </Window>

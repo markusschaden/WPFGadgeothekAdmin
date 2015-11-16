@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace WPFGadgeothekAdmin
 {
     /// <summary>
-    /// Interaction logic for Gadget.xaml
+    /// Interaction logic for GadgetView.xaml
     /// </summary>
-    public partial class Gadget : Window
+    public partial class GadgetView : Window
     {
-        public Gadget()
+        public GadgetView()
         {
             InitializeComponent();
         }
