@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:WPFGadgeothekAdmin"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="750">
+    
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -14,11 +15,11 @@
             </LinearGradientBrush>
 
         </Grid.Background>
-        <DockPanel>
-            <StatusBar DockPanel.Dock="Bottom" Height="20px">
-                <StatusBarItem>Connected to</StatusBarItem>
-                <StatusBarItem Content="{Binding ServiceUrl}"></StatusBarItem>
 
+        <DockPanel>
+            <StatusBar DockPanel.Dock="Bottom" Height="20px" Name="StatusBar" MouseLeftButtonUp="StatusBar_MouseLeftButtonUp">
+                <StatusBarItem Name="StatusBarInfo" Foreground="White"></StatusBarItem>
+                
             </StatusBar>
 
             <StackPanel DockPanel.Dock="Top" >
@@ -69,15 +70,10 @@
                                     </TextBlock>
                                 </Grid>
 
-                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Content="GadgetView hinzufügen" Margin="0,0,10,0" Click="Button_Click" Background="#FFF3F3F3" Padding="4px">
-
-                                    </Button>
-                                    <Button Content="GadgetView editieren" Background="#FFF3F3F3" Padding="4px"></Button>
-                                </StackPanel>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right"/>
                             </DockPanel>
 
-                            <DataGrid ItemsSource="{Binding GadgetViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFFCFCFC">
+                            <DataGrid Name="MainGadgetView"  ItemsSource="{Binding GadgetViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFFCFCFC">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding Gadget.InventoryNumber}" IsReadOnly="True"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Name" Binding="{Binding Gadget.Name}"></DataGridTextColumn>

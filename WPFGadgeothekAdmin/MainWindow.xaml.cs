@@ -31,38 +31,58 @@ namespace WPFGadgeothekAdmin
         public List<Customer> Customers { get; set; }
         public List<Gadget> AvailableGadgets { get; set; }
         public List<Loan> Loans { get; set; }
-
-        public List<GadgetViewModel> GadgetViewModels { get; set; }
-
+        public ObservableCollection<GadgetViewModel> GadgetViewModels { get; set; }
         public String ServiceUrl { get; set; }
+        private bool connected = false;
 
         public MainWindow()
         {
-            ServiceUrl = "http://localhost:8080";
-            libraryAdminService = new LibraryAdminService(ServiceUrl);
+            GadgetViewModels = new ObservableCollection<GadgetViewModel>();
+            DataContext = this;
+            InitializeComponent();
+            Connect();
+        }
+
+        public void Connect()
+        {
+            if (connected) return;
+            try
+            {
+                ServiceUrl = "http://localhost:8080";
+                libraryAdminService = new LibraryAdminService(ServiceUrl);
+                connected = true;
+                LoadData();
+                RefreshComponents();
+                StatusBarInfo.Content = $"Connected to {ServiceUrl}";
+                StatusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x07, 0x78, 0xB5));
+                
+            }
+            catch (Exception e)
+            {
+                connected = false;
+                StatusBarInfo.Content = $"Can't connect to {ServiceUrl} - Click here to reconnect";
+                StatusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x62, 0x1F));
+
+            }
+        }
+
+        private void RefreshComponents()
+        {
+            MainGadgetView.UpdateLayout();
+        }
+
+        public void LoadData()
+        {
             Gadgets = libraryAdminService.GetAllGadgets();
             Customers = libraryAdminService.GetAllCustomers();
             Loans = libraryAdminService.GetAllLoans();
-            GadgetViewModels = new List<GadgetViewModel>();
-            Gadgets.ForEach( g =>
+            
+            Gadgets.ForEach(g =>
             {
                 List<Loan> loans = Loans.FindAll(l => l.GadgetId == g.InventoryNumber);
-                GadgetViewModels.Add(new GadgetViewModel() {Gadget = g, Loans = loans});
+                GadgetViewModels.Add(new GadgetViewModel() { Gadget = g, Loans = loans });
             });
 
-
-            InitializeComponent();
-
-            DataContext = this;
-        }
-
-        
-        
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            GadgetView gadgetView = new GadgetView();
-            //GadgetView.Show();
-            
         }
 
         void ShowHideDetails(object sender, RoutedEventArgs e)
@@ -76,5 +96,11 @@ namespace WPFGadgeothekAdmin
                     break;
                 }
         }
+
+        private void StatusBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Connect();
+        }
+
     }
 }
