@@ -26,18 +26,22 @@ namespace WPFGadgeothekAdmin
     /// </summary>
     public partial class MainWindow : Window
     {
-        private LibraryAdminService libraryAdminService;
+        private LibraryAdminService _libraryAdminService;
         public List<Gadget> Gadgets { get; set; }
         public List<Customer> Customers { get; set; }
-        public List<Gadget> AvailableGadgets { get; set; }
+        public ObservableCollection<Gadget> AvailableGadgets { get; set; }
         public List<Loan> Loans { get; set; }
+        public List<Reservation> Reservations { get; set; }
         public ObservableCollection<GadgetViewModel> GadgetViewModels { get; set; }
+        public ObservableCollection<CustomerViewModel> CustomerViewModels { get; set; }
         public String ServiceUrl { get; set; }
         private bool connected = false;
 
         public MainWindow()
         {
             GadgetViewModels = new ObservableCollection<GadgetViewModel>();
+            CustomerViewModels = new ObservableCollection<CustomerViewModel>();
+            AvailableGadgets = new ObservableCollection<Gadget>();
             DataContext = this;
             InitializeComponent();
             Connect();
@@ -49,7 +53,7 @@ namespace WPFGadgeothekAdmin
             try
             {
                 ServiceUrl = "http://localhost:8080";
-                libraryAdminService = new LibraryAdminService(ServiceUrl);
+                _libraryAdminService = new LibraryAdminService(ServiceUrl);
                 connected = true;
                 LoadData();
                 RefreshComponents();
@@ -73,14 +77,20 @@ namespace WPFGadgeothekAdmin
 
         public void LoadData()
         {
-            Gadgets = libraryAdminService.GetAllGadgets();
-            Customers = libraryAdminService.GetAllCustomers();
-            Loans = libraryAdminService.GetAllLoans();
-            
+            Gadgets = _libraryAdminService.GetAllGadgets();
+            Customers = _libraryAdminService.GetAllCustomers();
+            Loans = _libraryAdminService.GetAllLoans();
+            Reservations = _libraryAdminService.GetAllReservations();
+
             Gadgets.ForEach(g =>
             {
                 List<Loan> loans = Loans.FindAll(l => l.GadgetId == g.InventoryNumber);
                 GadgetViewModels.Add(new GadgetViewModel() { Gadget = g, Loans = loans });
+            });
+
+            Customers.ForEach(c => {
+                List<Loan> loans = Loans.FindAll(l => l.CustomerId == c.Studentnumber);
+                CustomerViewModels.Add(new CustomerViewModel() { Customer = c, Loans = loans });
             });
 
         }
@@ -102,5 +112,19 @@ namespace WPFGadgeothekAdmin
             Connect();
         }
 
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CustomerViewModel selectedCustomer = (CustomerViewModel) CustomerViewModelList.SelectedItem;
+            LoanList.ItemsSource = Loans.FindAll(l => l.CustomerId == selectedCustomer.Customer.Studentnumber);
+            LoanList.UpdateLayout();
+
+            ReservationList.ItemsSource = Reservations.FindAll(r => r.CustomerId == selectedCustomer.Customer.Studentnumber);
+            ReservationList.UpdateLayout();
+
+            AvailableGadgets.Clear();
+            Gadgets.ForEach(g => AvailableGadgets.Add(g));
+            
+            Loans.FindAll(l => l.IsLent).ForEach(g => AvailableGadgets.Remove(g.Gadget));
+        }
     }
 }

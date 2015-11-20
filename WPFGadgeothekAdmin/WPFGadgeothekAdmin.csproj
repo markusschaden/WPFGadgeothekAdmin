@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="viewmodel\CustomerViewModel.cs" />
     <Compile Include="viewmodel\GadgetViewModel.cs" />
     <Page Include="GadgetView.xaml">
       <SubType>Designer</SubType>

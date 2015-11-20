@@ -4,9 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFGadgeothekAdmin"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:domain="clr-namespace:ch.hsr.wpf.gadgeothek.domain;assembly=ch.hsr.wpf.gadgeothek"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="750">
-    
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="ConditionEnum" 
+                        MethodName="GetValues" 
+                        ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="domain:Condition"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -79,7 +91,7 @@
                                     <DataGridTextColumn Header="Name" Binding="{Binding Gadget.Name}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Hersteller" Binding="{Binding Gadget.Manufacturer}"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Preis" Binding="{Binding Gadget.Price}"></DataGridTextColumn>
-                                    <DataGridTextColumn Header="Zustand" Binding="{Binding Gadget.Condition}"></DataGridTextColumn>
+                                    <DataGridComboBoxColumn Header="Zustand"  ItemsSource="{Binding Source={StaticResource ConditionEnum}}" SelectedItemBinding="{Binding Gadget.Condition}"></DataGridComboBoxColumn>
                                     <DataGridTextColumn Header="Verfügbar ab" Binding="{Binding ReturnDate, StringFormat=HH:mm dd.MM.yyyy}" IsReadOnly="True"></DataGridTextColumn>
                                     <DataGridTextColumn Header="Ausgeliehen an" Binding="{Binding PickupDate, StringFormat=HH:mm dd.MM.yyyy}" IsReadOnly="True"></DataGridTextColumn>
                                 </DataGrid.Columns>
@@ -111,11 +123,11 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Grid>
-                                <DataGrid ItemsSource="{Binding Customers}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFF7F7F7">
+                                <DataGrid Name="CustomerViewModelList" ItemsSource="{Binding CustomerViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFF7F7F7" SelectionChanged="DataGrid_SelectionChanged">
                                     <DataGrid.Columns >
-                                        <DataGridTextColumn Header="ID" Binding="{Binding Studentnumber}"></DataGridTextColumn>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"></DataGridTextColumn>
-                                        <DataGridCheckBoxColumn Header="Hat überfällige"></DataGridCheckBoxColumn>
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Customer.Studentnumber}"></DataGridTextColumn>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Customer.Name}"></DataGridTextColumn>
+                                        <DataGridCheckBoxColumn Header="Hat überfällige" Binding="{Binding HasOverdue, Mode=OneWay}" ></DataGridCheckBoxColumn>
                                     </DataGrid.Columns>
 
 
@@ -132,11 +144,10 @@
                                                     <local:ComboBoxItemTemplateSelector.ItemTemplate>
                                                         <DataTemplate>
                                                             <StackPanel Orientation="Horizontal">
-                                                                <Image Source="{Binding Image}" Height="100"/>
+                                                                
                                                                 <StackPanel Margin="10,0">
-                                                                    <TextBlock Text="{Binding FullName}" FontWeight="Bold" />
-                                                                    <TextBlock Text="{Binding Dates}"/>
-                                                                    <TextBlock Text="{Binding KnownFor}" FontStyle="Italic"/>
+                                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                                                    <!--<Image Source="{Binding Image}" Height="100"/>-->
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </DataTemplate>
@@ -156,12 +167,12 @@
                                         <Button Content="Ausleihen"></Button>
                                     </StackPanel>
 
-                                    <DataGrid>
+                                    <DataGrid Name="LoanList" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="Gainsboro"  AlternationCount="2" Background="#FFF7F7F7" >
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name"></DataGridTextColumn>
-                                            <DataGridTextColumn Header="Ausgeliehen am"></DataGridTextColumn>
-                                            <DataGridTextColumn Header="Zurück bis"></DataGridTextColumn>
-                                            <DataGridCheckBoxColumn Header="Fällig"></DataGridCheckBoxColumn>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Gadget.Name, Mode=OneWay}"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Ausgeliehen am" Binding="{Binding PickupDate, Mode=OneWay}"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Zurück bis" Binding="{Binding ReturnDate, Mode=OneWay}"></DataGridTextColumn>
+                                            <DataGridCheckBoxColumn Header="Fällig" Binding="{Binding IsOverdue, Mode=OneWay}"></DataGridCheckBoxColumn>
                                             <DataGridCheckBoxColumn Header="Reserviert"></DataGridCheckBoxColumn>
                                             <DataGridTemplateColumn Header="Rücknahme">
                                                 <DataGridTemplateColumn.CellTemplate>
@@ -179,7 +190,7 @@
                                         <Button Content="Reservieren"></Button>
                                     </StackPanel>
 
-                                    <DataGrid>
+                                    <DataGrid Name="ReservationList" >
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name"></DataGridTextColumn>
                                             <DataGridTextColumn Header="Warteschlange"></DataGridTextColumn>
