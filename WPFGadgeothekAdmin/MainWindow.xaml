@@ -1,4 +1,4 @@
-﻿<Window x:Class="WPFGadgeothekAdmin.MainWindow"
+﻿<controls:MetroWindow x:Class="WPFGadgeothekAdmin.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,8 +7,14 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:domain="clr-namespace:ch.hsr.wpf.gadgeothek.domain;assembly=ch.hsr.wpf.gadgeothek"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="950">
+        Title="Gadgeothek" Height="500" Width="950" Loaded="MetroWindow_Loaded">
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button Content="Settings" />
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
 
     <Window.Resources>
         <ObjectDataProvider x:Key="ConditionEnum" 
@@ -52,6 +58,14 @@
 
         </Grid.Background>
 
+        <Grid Name="Overlay" Panel.ZIndex="1000" Visibility="Collapsed">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity=".5"/>
+            </Grid.Background>
+            <controls:ProgressRing IsActive="True" />
+            <TextBlock Name="OverlayError"></TextBlock>
+        </Grid>
+
         <DockPanel>
             <StatusBar DockPanel.Dock="Bottom" Height="20px" Name="StatusBar" MouseLeftButtonUp="StatusBar_MouseLeftButtonUp">
                 <StatusBarItem Name="StatusBarInfo" Foreground="White"></StatusBarItem>
@@ -59,31 +73,6 @@
             </StatusBar>
 
             <StackPanel DockPanel.Dock="Top" >
-                <Border BorderBrush="{x:Null}" Height="50">
-                    <!--<Border.Background>
-                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                        <GradientStop Color="#FFCBCBCB" Offset="0.0"/>
-                        <GradientStop Color="#FF5F5F5F" Offset="0.5"/>
-                        <GradientStop Color="#FF282829" Offset="1.0"/>
-                    </LinearGradientBrush>
-                </Border.Background>
--->
-                    <Label Content="Gadgeothek" 
-       FontSize="24" FontWeight="Bold">
-                        <Label.Foreground>
-                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1.0,0.5">
-                                <GradientStop Color="DarkSlateBlue" Offset="0.0"/>
-                                <GradientStop Color="SkyBlue" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </Label.Foreground>
-                    </Label>
-
-
-
-
-                </Border>
-
-
                 <TabControl>
                     <TabControl.Background>#99ffffff</TabControl.Background>
                     <TabItem Header="Gadgets" >
@@ -91,7 +80,7 @@
                             <DockPanel  Margin="0,10,0,5">
 
                                 <Grid DockPanel.Dock="Left" >
-                                    <TextBox  Width="200" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox" Padding="4px"/>
+                                    <TextBox  Width="300" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox" Padding="4px"/>
                                     <TextBlock IsHitTestVisible="False" Text="Search" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                                         <TextBlock.Style>
                                             <Style TargetType="{x:Type TextBlock}">
@@ -123,12 +112,12 @@
 
                         </StackPanel>
                     </TabItem>
-                    <TabItem Header="Ausleihe" HorizontalAlignment="Right" Margin="0,-2,-1.8,2.4" Width="61">
+                    <TabItem Header="Ausleihe"  >
                         <StackPanel>
                             <DockPanel  Margin="0,10,0,5">
 
                                 <Grid DockPanel.Dock="Left" >
-                                    <TextBox  Width="200px" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox2" Padding="4px"/>
+                                    <TextBox  Width="300px" FontFamily="Calibri" FontSize="14.667"  VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="SearchTermTextBox2" Padding="4px"/>
                                     <TextBlock IsHitTestVisible="False" Text="Search" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                                         <TextBlock.Style>
                                             <Style TargetType="{x:Type TextBlock}">
@@ -152,10 +141,10 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel>
                                     <TextBlock Margin="2" FontSize="16">Kunden</TextBlock>
-                                    <DataGrid Name="CustomerViewModelList" ItemsSource="{Binding CustomerViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="#BBD7EEF8"  AlternationCount="2" Background="#FFFCFCFC" SelectionChanged="DataGrid_SelectionChanged" CanUserAddRows="False" CanUserDeleteRows="False">
+                                    <DataGrid Name="CustomerViewModelList" ItemsSource="{Binding CustomerViewModels}" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="#BBD7EEF8"  AlternationCount="2" Background="#FFFCFCFC" SelectionChanged="CustomerViewModelList_SelectionChanged" CanUserAddRows="False" CanUserDeleteRows="False">
                                         <DataGrid.Columns >
                                             <DataGridTextColumn Header="ID" Binding="{Binding Customer.Studentnumber}" Visibility="Hidden"></DataGridTextColumn>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Customer.Name}"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Customer.Name, Mode=OneWay}"></DataGridTextColumn>
                                             <DataGridCheckBoxColumn Header="Hat überfällige" Binding="{Binding HasOverdue, Mode=OneWay}" ></DataGridCheckBoxColumn>
                                         </DataGrid.Columns>
 
@@ -205,9 +194,9 @@
                                                     </local:ComboBoxItemTemplateSelector>
                                                 </ComboBox.ItemTemplateSelector>
                                             </ComboBox>
-                                            <Button Style="{StaticResource StandardButton}" Content="Ausleihen" Grid.Column="2" Click="AddLoan" Margin="1.6,2,2,2.4"></Button>
+                                            <Button Content="Ausleihen" Grid.Column="2" Click="AddLoan" Margin="2.2,2,2,2.4"></Button>
 
-                                            <Button Style="{StaticResource StandardButton}" Content="Rücknahme" Grid.Column="4" IsEnabled="False" Margin="2.2,2,2,2.4"></Button>
+                                            <Button Name="TakingBackButton"  Content="Rücknahme" Grid.Column="4" IsEnabled="True" Margin="2.2,2,2,2.4" Click="TakingBackButton_Click" ></Button>
                                         </Grid>
 
                                         <DataGrid ItemsSource="{Binding LoanedGadgets}" Name="LoanList" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="#BBD7EEF8"  AlternationCount="2" Background="#FFFCFCFC" CanUserAddRows="False" CanUserDeleteRows="False">
@@ -269,10 +258,10 @@
                                                     </local:ComboBoxItemTemplateSelector>
                                                 </ComboBox.ItemTemplateSelector>
                                             </ComboBox>
-                                            <Button Style="{StaticResource StandardButton}" Content="Reservieren"  Grid.Column="1" Click="AddReservation"></Button>
+                                            <Button Content="Reservieren"  Grid.Column="1" Click="AddReservation" Margin="2.2,2,2,2.4"></Button>
 
-                                            <Button Style="{StaticResource StandardButton}" Content="Ausleihen" Grid.Column="3" IsEnabled="False"></Button>
-                                            <Button Style="{StaticResource StandardButton}" Content="Löschen" Grid.Column="4" IsEnabled="False"></Button>
+                                            <Button Content="Ausleihen" Grid.Column="3" IsEnabled="False" Margin="2.2,2,2,2.4"></Button>
+                                            <Button Content="Löschen" Grid.Column="4" IsEnabled="False" Margin="2.2,2,2,2.4"></Button>
                                         </Grid>
 
                                         <DataGrid ItemsSource="{Binding ReservedGadgets}" Name="ReservationList" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="#BBD7EEF8"  AlternationCount="2" Background="#FFFCFCFC" CanUserAddRows="False" CanUserDeleteRows="False">
@@ -311,4 +300,4 @@
 
         </DockPanel>
     </Grid>
-</Window>
+</controls:MetroWindow>

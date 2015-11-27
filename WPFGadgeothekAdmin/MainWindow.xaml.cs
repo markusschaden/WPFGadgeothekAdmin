@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,6 +20,7 @@ using System.Windows.Shapes;
 using ch.hsr.wpf.gadgeothek;
 using ch.hsr.wpf.gadgeothek.domain;
 using ch.hsr.wpf.gadgeothek.websocket;
+using MahApps.Metro.Controls;
 using WPFGadgeothekAdmin.viewmodel;
 
 namespace WPFGadgeothekAdmin
@@ -26,7 +28,7 @@ namespace WPFGadgeothekAdmin
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private LibraryAdminService _libraryAdminService;
         public List<Gadget> Gadgets { get; set; }
@@ -42,11 +44,7 @@ namespace WPFGadgeothekAdmin
 
         public ObservableCollection<Reservation> ReservedGadgets { get; set; }
         public ObservableCollection<Loan> LoanedGadgets { get; set; }
-
-
-
-
-
+       
         public int MAX_LOANS { get; set; }
         public int MAX_RESERVATIONS { get; set; }
 
@@ -56,7 +54,8 @@ namespace WPFGadgeothekAdmin
 
         public String ServiceUrl { get; set; }
         private bool _connected = false;
-        private CustomerViewModel _selectedCustomer;
+        //private CustomerViewModel _selectedCustomer;
+        private String _selectedCustomerId;
 
         public MainWindow()
         {
@@ -72,6 +71,12 @@ namespace WPFGadgeothekAdmin
 
             DataContext = this;
             InitializeComponent();
+            ShowLoadingScreen();
+            //Connect();
+        }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             Connect();
         }
 
@@ -87,6 +92,8 @@ namespace WPFGadgeothekAdmin
                 RefreshComponents();
                 StatusBarInfo.Content = $"Connected to {ServiceUrl}";
                 StatusBar.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x07, 0x78, 0xB5));
+
+                HideLoadingScreen();
 
                 var client = new WebSocketClient(ServiceUrl);
                 client.NotificationReceived += (o, e) =>
@@ -124,10 +131,19 @@ namespace WPFGadgeothekAdmin
 
                     LoadModels();
                     UpdateView();
+
+                    HideLoadingScreen();
                 };
 
                 // spawn a new background thread in which the websocket client listens to notifications from the server
-                var bgTask = client.ListenAsync();
+                try
+                {
+                    var bgTask = client.ListenAsync();
+                }
+                catch (WebSocketException e)
+                {
+                    ShowErrorScreen();
+                }
             }
             catch (Exception e)
             {
@@ -163,7 +179,6 @@ namespace WPFGadgeothekAdmin
             });
 
             CustomerViewModels.Clear();
-            CustomerViewModels.ToList().RemoveAll(t => true);
             Customers.ForEach(c => {
                 List<Loan> loans = Loans.FindAll(l => l.CustomerId == c.Studentnumber);
                 CustomerViewModels.Add(new CustomerViewModel() { Customer = c, Loans = loans });
@@ -176,32 +191,33 @@ namespace WPFGadgeothekAdmin
             Connect();
         }
 
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CustomerViewModelList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedCustomer = (CustomerViewModel) CustomerViewModelList.SelectedItem;
+            CustomerViewModel selectedCustomer = (CustomerViewModel) CustomerViewModelList.SelectedItem;
+            if (selectedCustomer == null) return; 
+            _selectedCustomerId = selectedCustomer.Customer.Studentnumber;
 
             UpdateView();
             
-            Storyboard fading = this.Resources["ColumnAnimation"] as Storyboard;
-            if (fading != null)
-            {
-                //fading.Begin();   
-            }
         }
 
         private void UpdateView()
         {
-            if (_selectedCustomer == null) return;
+            if (_selectedCustomerId == null)
+            {
+                Debug.Print("CustomerID null");
+                return;
+            }
 
             //LoanedGadgets = new ObservableCollection<Loan>(Loans.FindAll(l => l.CustomerId == _selectedCustomer.Customer.Studentnumber && l.WasReturned == false).ToList());
             LoanList.ItemsSource =
-                Loans.FindAll(l => l.CustomerId == _selectedCustomer.Customer.Studentnumber && l.WasReturned == false);
+                Loans.FindAll(l => l.CustomerId == _selectedCustomerId && l.WasReturned == false);
             LoanList.UpdateLayout();
 
             //ReservedGadgets = new ObservableCollection<Reservation>(Reservations.FindAll(r => r.CustomerId == _selectedCustomer.Customer.Studentnumber && r.Finished == false).ToList());
             ReservationList.ItemsSource =
                 Reservations.FindAll(
-                    r => r.CustomerId == _selectedCustomer.Customer.Studentnumber && r.Finished == false);
+                    r => r.CustomerId == _selectedCustomerId && r.Finished == false);
             ReservationList.UpdateLayout();
 
             AvailableGadgets.Clear();
@@ -212,37 +228,69 @@ namespace WPFGadgeothekAdmin
             ReservableGadgets.Clear();
             Gadgets.ForEach(g => ReservableGadgets.Add(g));
             AvailableGadgets.ToList().ForEach(g => ReservableGadgets.Remove(g));
-            Loans.FindAll(l => l.CustomerId == _selectedCustomer.Customer.Studentnumber && l.WasReturned == false).ForEach(l => ReservableGadgets.Remove(l.Gadget));
-            Reservations.FindAll(r => r.CustomerId == _selectedCustomer.Customer.Studentnumber && r.Finished == false).ForEach(r => ReservableGadgets.Remove(r.Gadget));
+            Loans.FindAll(l => l.CustomerId == _selectedCustomerId && l.WasReturned == false).ForEach(l => ReservableGadgets.Remove(l.Gadget));
+            Reservations.FindAll(r => r.CustomerId == _selectedCustomerId && r.Finished == false).ForEach(r => ReservableGadgets.Remove(r.Gadget));
 
         }
 
         private void AddReservation(object sender, RoutedEventArgs e)
         {
-            if (_selectedCustomer != null && SelectedReservationGadget != null)
+            if (_selectedCustomerId != null && SelectedReservationGadget != null)
             {
+                ShowLoadingScreen();
                 _libraryAdminService.AddReservation(new Reservation()
                 {
                     Id = GUIDGenerator.getGUID().ToString(),
-                    CustomerId = _selectedCustomer.Customer.Studentnumber,
+                    CustomerId = _selectedCustomerId,
                     GadgetId = SelectedReservationGadget.InventoryNumber,
                     ReservationDate = DateTime.Now
                 });
             }
+            
         }
 
         private void AddLoan(object sender, RoutedEventArgs e)
         {
-            if (_selectedCustomer != null && SelectedAvailableGadget != null)
+            if (_selectedCustomerId != null && SelectedAvailableGadget != null)
             {
+                ShowLoadingScreen();
+
                 _libraryAdminService.AddLoan(new Loan()
                 {
                     Id = GUIDGenerator.getGUID().ToString(),
-                    CustomerId = _selectedCustomer.Customer.Studentnumber,
+                    CustomerId = _selectedCustomerId,
                     GadgetId = SelectedAvailableGadget.InventoryNumber,
                     PickupDate = DateTime.Now
                 });
             }
+            
+        }
+
+        private void TakingBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            Loan selectedLoan = LoanList.SelectedItem as Loan;
+            if (selectedLoan == null) return;
+
+            ShowLoadingScreen();
+            selectedLoan.ReturnDate = DateTime.Now;
+            _libraryAdminService.UpdateLoan(selectedLoan);
+
+        }
+
+        private void ShowLoadingScreen()
+        {
+            Overlay.Visibility = Visibility.Visible;
+        }
+
+        private void ShowErrorScreen()
+        {
+            Overlay.Visibility = Visibility.Visible;
+            OverlayError.Text = "Lost Connection";
+        }
+
+        private void HideLoadingScreen()
+        {
+            Overlay.Visibility = Visibility.Collapsed;
         }
     }
 }
