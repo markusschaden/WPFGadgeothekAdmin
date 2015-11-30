@@ -260,8 +260,8 @@
                                             </ComboBox>
                                             <Button Content="Reservieren"  Grid.Column="1" Click="AddReservation" Margin="2.2,2,2,2.4"></Button>
 
-                                            <Button Content="Ausleihen" Grid.Column="3" IsEnabled="False" Margin="2.2,2,2,2.4"></Button>
-                                            <Button Content="Löschen" Grid.Column="4" IsEnabled="False" Margin="2.2,2,2,2.4"></Button>
+                                            <Button Name="LoanReservationButton"  Content="Ausleihen" Grid.Column="3" IsEnabled="True" Margin="2.2,2,2,2.4" Click="LoanReservationButton_Click"></Button>
+                                            <Button Name="DeleteReservationButton" Content="Löschen" Grid.Column="4" IsEnabled="True" Margin="2.2,2,2,2.4" Click="DeleteReservationButton_Click"></Button>
                                         </Grid>
 
                                         <DataGrid ItemsSource="{Binding ReservedGadgets}" Name="ReservationList" AutoGenerateColumns="False" CanUserSortColumns="True" AlternatingRowBackground="#BBD7EEF8"  AlternationCount="2" Background="#FFFCFCFC" CanUserAddRows="False" CanUserDeleteRows="False">

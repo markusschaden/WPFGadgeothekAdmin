@@ -106,7 +106,10 @@ namespace WPFGadgeothekAdmin
                         var gadget = e.Notification.DataAs<Gadget>();                       
                         var oldGadget = Gadgets.Find(g => g.InventoryNumber == gadget.InventoryNumber);
                         Gadgets.Remove(oldGadget);
-                        Gadgets.Add(gadget);
+                        if (e.Notification.Type != WebSocketClientNotificationTypeEnum.Delete)
+                        {
+                            Gadgets.Add(gadget);
+                        }
 
                     } else if (e.Notification.Target == typeof(Reservation).Name.ToLower())
                     {
@@ -116,7 +119,10 @@ namespace WPFGadgeothekAdmin
 
                         reservation.Customer = Customers.Find(c => c.Studentnumber == reservation.CustomerId);
                         reservation.Gadget = Gadgets.Find(c => c.InventoryNumber == reservation.GadgetId);
-                        Reservations.Add(reservation);
+                        if (e.Notification.Type != WebSocketClientNotificationTypeEnum.Delete)
+                        {
+                            Reservations.Add(reservation);
+                        }
 
                     } else if (e.Notification.Target == typeof(Loan).Name.ToLower())
                     {
@@ -126,7 +132,10 @@ namespace WPFGadgeothekAdmin
 
                         loan.Customer = Customers.Find(c => c.Studentnumber == loan.CustomerId);
                         loan.Gadget = Gadgets.Find(c => c.InventoryNumber == loan.GadgetId);
-                        Loans.Add(loan);
+                        if (e.Notification.Type != WebSocketClientNotificationTypeEnum.Delete)
+                        {
+                            Loans.Add(loan);
+                        }
                     }
 
                     LoadModels();
@@ -291,6 +300,31 @@ namespace WPFGadgeothekAdmin
         private void HideLoadingScreen()
         {
             Overlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void DeleteReservationButton_Click(object sender, RoutedEventArgs e)
+        {
+            Reservation selectedReservation = ReservationList.SelectedItem as Reservation;
+            if (selectedReservation == null) return;
+
+            _libraryAdminService.DeleteReservation(selectedReservation);
+        }
+
+        private void LoanReservationButton_Click(object sender, RoutedEventArgs e)
+        {
+            Reservation selectedReservation = ReservationList.SelectedItem as Reservation;
+            if (selectedReservation == null) return;
+
+            selectedReservation.Finished = true;
+            _libraryAdminService.UpdateReservation(selectedReservation);
+
+            _libraryAdminService.AddLoan(new Loan()
+            {
+                Id = GUIDGenerator.getGUID().ToString(),
+                CustomerId = _selectedCustomerId,
+                GadgetId = selectedReservation.GadgetId,
+                PickupDate = DateTime.Now
+            });
         }
     }
 }
